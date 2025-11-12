@@ -1,0 +1,14 @@
+# Step 1: Import the pandas library
+import pandas as pd
+
+# Step 2: Read the CSV file
+df = pd.read_csv("student.csv")
+
+# Step 3: Display the full dataset
+df
+
+# Step 4: Display the first 2 rows of the dataset
+df.head(2)
+
+# Step 5: Display the last 2 rows of the dataset
+df.tail(2)
