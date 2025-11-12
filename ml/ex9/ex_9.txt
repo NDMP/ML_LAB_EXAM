@@ -1,0 +1,40 @@
+# Step 1: Import required libraries
+import pandas as pd
+from sklearn.preprocessing import LabelEncoder
+from sklearn import tree
+
+# Step 2: Read the dataset
+df = pd.read_csv("salaries.csv")
+print(df.head())
+
+# Step 3: Separate input and target columns
+inputs = df.drop('salary_more_then_100k', axis='columns')
+target = df['salary_more_then_100k']
+
+# Step 4: Convert categorical data into numeric form using LabelEncoder
+le_company = LabelEncoder()
+le_job = LabelEncoder()
+le_degree = LabelEncoder()
+
+inputs['company_n'] = le_company.fit_transform(inputs['company'])
+inputs['job_n'] = le_job.fit_transform(inputs['job'])
+inputs['degree_n'] = le_degree.fit_transform(inputs['degree'])
+
+# Step 5: Drop old text columns and keep only numeric columns
+inputs_n = inputs.drop(['company', 'job', 'degree'], axis='columns')
+print(inputs_n)
+print(target)
+
+# Step 6: Train the Decision Tree model
+model = tree.DecisionTreeClassifier()
+model.fit(inputs_n, target)
+
+# Step 7: Check accuracy
+print("Model Accuracy:", model.score(inputs_n, target))
+
+# Step 8: Predict salary for specific cases
+print("Is salary of Google, Computer Engineer, Bachelors degree > 100K?")
+print(model.predict([[2, 1, 0]]))  # Output: [0] → No
+
+print("Is salary of Google, Computer Engineer, Masters degree > 100K?")
+print(model.predict([[2, 1, 1]]))  # Output: [1] → Yes
