@@ -1,0 +1,38 @@
+# Step 1: Import libraries
+from sklearn.datasets import load_breast_cancer
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from sklearn.svm import SVC
+import pandas as pd
+
+# Step 2: Load dataset
+a = load_breast_cancer()
+
+# Step 3: View dataset as DataFrame
+df = pd.DataFrame(a.data, columns=list(a.feature_names))
+df['diagnosis'] = a.target
+print("First 5 rows of the dataset:\n")
+print(df.head())
+
+# Step 4: Split features and target
+X = a.data
+y = a.target
+
+# Step 5: Split data into training and testing sets
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.3, random_state=42, stratify=y
+)
+
+# Step 6: Scale the data
+scaler = StandardScaler()
+X_train_scaled = scaler.fit_transform(X_train)
+X_test_scaled = scaler.transform(X_test)
+
+# Step 7: Create and train SVM model (linear kernel)
+svm = SVC(kernel='linear')
+svm.fit(X_train_scaled, y_train)
+
+# Step 8: Display accuracy
+print("\nModel Accuracy:")
+print(f"Training Accuracy: {svm.score(X_train_scaled, y_train):.3f}")
+print(f"Testing Accuracy : {svm.score(X_test_scaled, y_test):.3f}")

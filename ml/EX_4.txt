@@ -1,0 +1,35 @@
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import accuracy_score, confusion_matrix, precision_score, recall_score, f1_score
+
+# Step 2: Load Dataset
+data = pd.read_csv("diabetes.csv")
+
+# Step 3: Split Features and Target
+X = data.drop(columns='Outcome', axis=1)
+Y = data['Outcome']
+
+# Step 4: Split into Training and Testing Data
+X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.2, random_state=2)
+
+# Step 5: Train Logistic Regression Model
+model = LogisticRegression(max_iter=1000)
+model.fit(X_train, Y_train)
+
+# Step 6: Predictions
+train_pred = model.predict(X_train)
+test_pred = model.predict(X_test)
+
+# Step 7: Accuracy
+print("Training Accuracy:", round(accuracy_score(Y_train, train_pred)*100, 2), "%")
+print("Testing Accuracy:", round(accuracy_score(Y_test, test_pred)*100, 2), "%")
+
+# Step 8: Confusion Matrix
+cm = confusion_matrix(Y_test, test_pred)
+print("\nConfusion Matrix:\n", cm)
+
+# Step 9: Precision, Recall, and F1-Score
+print("\nPrecision:", round(precision_score(Y_test, test_pred), 2))
+print("Recall:", round(recall_score(Y_test, test_pred), 2))
+print("F1 Score:", round(f1_score(Y_test, test_pred), 2))

@@ -1,0 +1,48 @@
+5a
+
+
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.naive_bayes import GaussianNB
+from sklearn.metrics import accuracy_score, confusion_matrix
+
+data = pd.read_csv("diabetes.csv")
+X = data.drop(columns='Outcome')
+Y = data['Outcome']
+
+X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.2, random_state=0)
+
+model = GaussianNB()
+model.fit(X_train, Y_train)
+
+train_pred = model.predict(X_train)
+test_pred = model.predict(X_test)
+
+print("Train Accuracy:", round(accuracy_score(Y_train, train_pred)*100, 2), "%")
+print("Test Accuracy:", round(accuracy_score(Y_test, test_pred)*100, 2), "%")
+print("Confusion Matrix:\n", confusion_matrix(Y_test, test_pred))
+
+
+5B
+
+
+import pandas as pd
+from sklearn.model_selection import train_test_split, cross_val_score
+from sklearn.naive_bayes import GaussianNB
+from sklearn.metrics import accuracy_score, confusion_matrix
+
+data = pd.read_csv("diabetes.csv")
+X = data.drop(columns='Outcome')
+Y = data['Outcome']
+
+X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.2, random_state=1)
+model = GaussianNB()
+model.fit(X_train, Y_train)
+
+cv_score = cross_val_score(model, X, Y, cv=5)
+print("Cross Validation Accuracy:", round(cv_score.mean()*100, 2), "%")
+
+test_pred = model.predict(X_test)
+print("Test Accuracy:", round(accuracy_score(Y_test, test_pred)*100, 2), "%")
+print("Confusion Matrix:\n", confusion_matrix(Y_test, test_pred))
+
