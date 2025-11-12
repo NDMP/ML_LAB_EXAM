@@ -1,0 +1,49 @@
+# Step 1: Import Dependencies
+import numpy as np
+import pandas as pd
+import csv
+
+# Step 2: Import BayesianModel and related modules
+from pgmpy.models import BayesianModel
+from pgmpy.estimators import MaximumLikelihoodEstimator
+from pgmpy.inference import VariableElimination
+
+# Step 3: Load dataset
+hd = pd.read_csv('heart.csv')
+hd = hd.replace('?', np.nan)
+print(hd.head())
+
+# Step 4: Define the structure of Bayesian Network
+model = BayesianModel([
+    ('age', 'target'),
+    ('sex', 'target'),
+    ('cp', 'target'),
+    ('trestbps', 'target'),
+    ('chol', 'target'),
+    ('fbs', 'target'),
+    ('restecg', 'target'),
+    ('thalach', 'target'),
+    ('exang', 'target'),
+    ('oldpeak', 'target'),
+    ('slope', 'target'),
+    ('ca', 'target'),
+    ('thal', 'target')
+])
+
+# Step 5: Train model using Maximum Likelihood Estimation
+print("\nLearning CPD using Maximum Likelihood Estimators...")
+model.fit(hd, estimator=MaximumLikelihoodEstimator)
+
+# Step 6: Perform Inference
+print("\nInferencing with Bayesian Network...")
+hd_infer = VariableElimination(model)
+
+# Step 7: Predict probability of heart disease given evidence restecg = 1
+print("\n1. Probability of heart disease given evidence = restecg :1")
+q1 = hd_infer.query(variables=['target'], evidence={'restecg': 1})
+print(q1)
+
+# Step 8: Predict probability of heart disease given evidence cp = 2
+print("\n2. Probability of heart disease given evidence = cp :2")
+q2 = hd_infer.query(variables=['target'], evidence={'cp': 2})
+print(q2)
