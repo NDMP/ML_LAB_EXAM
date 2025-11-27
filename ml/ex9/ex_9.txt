@@ -1,40 +1,33 @@
-# Step 1: Import required libraries
+# Step 1: Import libraries
 import pandas as pd
 from sklearn.preprocessing import LabelEncoder
-from sklearn import tree
+from sklearn.tree import DecisionTreeClassifier
 
-# Step 2: Read the dataset
+# Step 2: Load data
 df = pd.read_csv("salaries.csv")
-print(df.head())
 
-# Step 3: Separate input and target columns
-inputs = df.drop('salary_more_then_100k', axis='columns')
-target = df['salary_more_then_100k']
+# Step 3: Separate features and target
+X = df[['company', 'job', 'degree']]
+y = df['salary_more_then_100k']
 
-# Step 4: Convert categorical data into numeric form using LabelEncoder
-le_company = LabelEncoder()
-le_job = LabelEncoder()
-le_degree = LabelEncoder()
+# Step 4: Label encode categorical columns
+le = LabelEncoder()
+X['company_n'] = le.fit_transform(X['company'])
+X['job_n'] = le.fit_transform(X['job'])
+X['degree_n'] = le.fit_transform(X['degree'])
 
-inputs['company_n'] = le_company.fit_transform(inputs['company'])
-inputs['job_n'] = le_job.fit_transform(inputs['job'])
-inputs['degree_n'] = le_degree.fit_transform(inputs['degree'])
+X_n = X[['company_n', 'job_n', 'degree_n']]
 
-# Step 5: Drop old text columns and keep only numeric columns
-inputs_n = inputs.drop(['company', 'job', 'degree'], axis='columns')
-print(inputs_n)
-print(target)
+# Step 5: Train model
+model = DecisionTreeClassifier()
+model.fit(X_n, y)
 
-# Step 6: Train the Decision Tree model
-model = tree.DecisionTreeClassifier()
-model.fit(inputs_n, target)
+# Step 6: Accuracy
+print("Accuracy:", model.score(X_n, y))
 
-# Step 7: Check accuracy
-print("Model Accuracy:", model.score(inputs_n, target))
+# Step 7: Predictions
+print("Google, Computer Programmer, Bachelors:",
+      model.predict([[2, 1, 0]]))
 
-# Step 8: Predict salary for specific cases
-print("Is salary of Google, Computer Engineer, Bachelors degree > 100K?")
-print(model.predict([[2, 1, 0]]))  # Output: [0] → No
-
-print("Is salary of Google, Computer Engineer, Masters degree > 100K?")
-print(model.predict([[2, 1, 1]]))  # Output: [1] → Yes
+print("Google, Computer Programmer, Masters:",
+      model.predict([[2, 1, 1]]))
