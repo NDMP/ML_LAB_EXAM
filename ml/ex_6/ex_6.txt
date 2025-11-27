@@ -1,49 +1,24 @@
-# Step 1: Import Dependencies
-import numpy as np
 import pandas as pd
-import csv
-
-# Step 2: Import BayesianModel and related modules
 from pgmpy.models import BayesianModel
-from pgmpy.estimators import MaximumLikelihoodEstimator
-from pgmpy.inference import VariableElimination
+from pgmpy.estimators import MaximumLikelihoodEstimator, VariableElimination
 
-# Step 3: Load dataset
-hd = pd.read_csv('heart.csv')
-hd = hd.replace('?', np.nan)
-print(hd.head())
+# 1. Load data
+data = pd.read_csv("heart.csv")
 
-# Step 4: Define the structure of Bayesian Network
+# 2. Simple Bayesian structure
 model = BayesianModel([
-    ('age', 'target'),
-    ('sex', 'target'),
     ('cp', 'target'),
-    ('trestbps', 'target'),
-    ('chol', 'target'),
-    ('fbs', 'target'),
-    ('restecg', 'target'),
-    ('thalach', 'target'),
-    ('exang', 'target'),
-    ('oldpeak', 'target'),
-    ('slope', 'target'),
-    ('ca', 'target'),
-    ('thal', 'target')
+    ('thalach', 'target')
 ])
 
-# Step 5: Train model using Maximum Likelihood Estimation
-print("\nLearning CPD using Maximum Likelihood Estimators...")
-model.fit(hd, estimator=MaximumLikelihoodEstimator)
+# 3. Train the model
+model.fit(data, estimator=MaximumLikelihoodEstimator)
 
-# Step 6: Perform Inference
-print("\nInferencing with Bayesian Network...")
-hd_infer = VariableElimination(model)
+# 4. Inference (prediction)
+infer = VariableElimination(model)
 
-# Step 7: Predict probability of heart disease given evidence restecg = 1
-print("\n1. Probability of heart disease given evidence = restecg :1")
-q1 = hd_infer.query(variables=['target'], evidence={'restecg': 1})
-print(q1)
+# Probability of heart disease when cp = 1
+print(infer.query(['target'], {'cp': 1}))
 
-# Step 8: Predict probability of heart disease given evidence cp = 2
-print("\n2. Probability of heart disease given evidence = cp :2")
-q2 = hd_infer.query(variables=['target'], evidence={'cp': 2})
-print(q2)
+# Probability of heart disease when thalach = 150
+print(infer.query(['target'], {'thalach': 150}))
